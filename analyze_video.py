@@ -64,6 +64,8 @@ ap.add_argument('--height-offset', type=int, default=0,
                 help="height offset for croppign (optional, default 0)")
 args = vars(ap.parse_args())
 INF = sys.maxsize
+# TODO: make this flexible for multiple sizes of sliding window
+probDistribution = [0.5, 0.707, 0.867, 0.966, 1.0, 1.0, 0.966, 0.867, 0.707, 0.5]
 
 print("[INFO] loading models...")
 crop_model = load_model(args['crop_model'],
