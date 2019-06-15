@@ -28,3 +28,4 @@ Improvements
  - [ ] Tested code
  - [ ] Better handling of argument preservation across scripts
  - [ ] More flexibility in model structure
+ - [ ] Training performance visualization
