@@ -52,6 +52,8 @@ ap.add_argument('-cm', '--crop-model', required=True,
                help="path to crop model file")
 ap.add_argument('-t', '--timesteps', type=int, default=10,
                help="number of timesteps (OPTIONAL) (default 10)")
+ap.add_argument('-bs', '--batch-size', type=int, default=64,
+               help="batch size when analyzing (OPTIONAL) (default 64)")
 ap.add_argument('--mean', type=float, default=0.257,
                    help="OPTIONAL: adjust image normalization mean (default 0.257)")
 ap.add_argument('--std', type=float, default=0.288,
@@ -85,7 +87,7 @@ v = PointCrop2D(crop_size=args['crop_size'], mean=args['mean'],
                 std=args['std'], wOffset=args['width_offset'],
                 hOffset=args['height_offset'])([v, crop_model.input])
 v = MaxPooling2D((2, 2), padding='same', name='downsampler')(v)
-v = convNet(v)
+v = conv_net(v)
 
 visual_model = Model(input=crop_model.input, outputs=v)
 
@@ -110,7 +112,7 @@ trackedFeatures = np.loadtxt(os.path.join(args['session_dir'], args['session'],
 mat = scipy.io.loadmat(os.path.join(args['session_dir'], args['session'],
                        'runAnalyzed.mat'))
 
-print("[INFO] preprocessing sesssion...")
+print("[INFO] preprocessing session...")
 obsOnTimes = np.squeeze(mat['obsOnTimes'])
 obsOnFrames = []
 clipLen = len(mat['frameTimeStampsWisk'])
@@ -223,17 +225,17 @@ for idx, framenum, endframe in tqdm(trialFrames):
             obsPos = list(map(int, [features[22], features[23]]))
             obsConf = features[24]
             nosePos = list(map(int, [features[19], features[20]]))
-        for i in range(timesteps):
+        for i in range(args['timesteps']):
             needFrames.append(framenum)
             framenum+=1
         frames.clear()
         while needFrames:
             frameBatch = []
-            for i in range(bs):
+            for i in range(args['batch_size']):
                 if not needFrames:
                     break
                 frameBatch.append(needFrames.popleft())
-            actualBatch = [((1.-np.reshape((clip.get_frame(i*1./clip.fps)/255.)[:,:,0], input_size+(1,)))-0.257)/0.288 for i in frameBatch]
+            actualBatch = [((1.-np.reshape((clip.get_frame(i*1./clip.fps)/255.)[:,:,0], tuple(size)+(1,)))-0.257)/0.288 for i in frameBatch]
             actualBatch = np.asarray(actualBatch)
             predBatch = visual_model.predict(actualBatch)
             frames.update({i:j for (i, j) in zip(frameBatch, predBatch)})
@@ -245,7 +247,7 @@ for idx, framenum, endframe in tqdm(trialFrames):
         needAnal = deque()
         while (nosePos[0]-obsPos[0]<50 or obsConf!=1) and framenum < endframe:
             session = []
-            if framenum<timesteps:
+            if framenum<args['timesteps']:
                 framenum+=1
                 features = trackedFeatures[convertWiskStamps(framenum, mat)]
                 obsPos = list(map(int, [features[22], features[23]]))
@@ -259,7 +261,7 @@ for idx, framenum, endframe in tqdm(trialFrames):
                 obsConf = features[24]
                 nosePos = list(map(int, [features[19], features[20]]))
                 continue
-            for i in range(timesteps):
+            for i in range(args['timesteps']):
                 frame = framenum+i
                 session.append(frame)
             needAnal.append(session)
@@ -271,7 +273,7 @@ for idx, framenum, endframe in tqdm(trialFrames):
         softmaxs.clear()
         while needAnal:
             frameBatch = []
-            for i in range(bs):
+            for i in range(args['batch_size']):
                 if not needAnal:
                     break
                 frameBatch.append(needAnal.popleft())
@@ -281,7 +283,7 @@ for idx, framenum, endframe in tqdm(trialFrames):
         for framenum in softmaxs:
             softmax = softmaxs[framenum]
             prediction = np.argmax(softmax)
-            if prediction == timesteps:
+            if prediction == args['timesteps']:
                 continue
             if framenum+prediction in frameProbs:
                 frameProbs[framenum+prediction]+=probDistribution[prediction]
