@@ -2,7 +2,6 @@ import numpy as np
 
 from keras.engine import Layer
 from keras.engine import InputSpec
-from keras.utils import conv_utils
 
 from keras.backend import permute_dimensions
 
@@ -81,7 +80,7 @@ class Maxima2D(Layer):
 
     def __init__(self, data_format=None, **kwargs):
         super(Maxima2D, self).__init__(**kwargs)
-        self.data_format = conv_utils.normalize_data_format(data_format)
+        self.data_format = K.normalize_data_format(data_format)
         self.input_spec = InputSpec(ndim=4)
 
     def compute_output_shape(self, input_shape):

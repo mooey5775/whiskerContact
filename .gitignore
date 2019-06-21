@@ -4,6 +4,9 @@
 .LSOverride
 .vscode
 
+# Custom stuff
+data
+
 # Icon must end with two \r
 Icon
 

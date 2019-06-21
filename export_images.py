@@ -114,7 +114,7 @@ if __name__ == '__main__':
     INF = sys.maxsize
 
     # Load and assemble crop model
-    crop_model = keras.models.load_model(args['cropmodel'], custom_objects={'meanDistance', meanDistance})
+    crop_model = keras.models.load_model(args['cropmodel'], custom_objects={'meanDistance': meanDistance})
 
     x = crop_model.output
     x = Maxima2D()(x)
@@ -135,7 +135,7 @@ if __name__ == '__main__':
 
     # Process sessions
     for session in sessions:
-        print(session)
+        print("Exporting images from", session)
         clip = VideoFileClip(os.path.join(sessions[session], 'runWisk.mp4'))
         trackedFeatures = np.loadtxt(os.path.join(sessions[session], 'trackedFeaturesRaw.csv'), delimiter=',', skiprows=1)
         mat = scipy.io.loadmat(os.path.join(sessions[session], 'runAnalyzed.mat'))
@@ -186,7 +186,7 @@ if __name__ == '__main__':
                 obsPos = list(map(int, [features[22], features[23]]))
                 obsConf = features[24]
                 nosePos = list(map(int, [features[19], features[20]]))
-            for i in range(timesteps):
+            for i in range(args['timesteps']):
                 maxFrame = max(framenum, maxFrame)
                 framenum+=1
             if labeledTrials[idx]<=maxFrame and labeledTrials[idx]>=minFrame:
@@ -215,7 +215,7 @@ if __name__ == '__main__':
 
         for trial in tqdm(frames):
             randTrial = random.random()
-            if randTrial<validation_split:
+            if randTrial<args['valsplit']:
                 testFile.write(','.join(map(str, [trial[0], trial[2], trial[1]]))+'\n')
             else:
                 trainFile.write(','.join(map(str, [trial[0], trial[2], trial[1]]))+'\n')
@@ -224,7 +224,7 @@ if __name__ == '__main__':
                 img = img/255.
                 newImg = model.predict(normalize(img))*0.288+0.257
                 newImg = np.concatenate([newImg, newImg, newImg], axis=3)
-                plt.imsave(os.path.join(testDir if randTrial<validation_split else trainDir, str(frame).zfill(width)+'.png'), np.squeeze(newImg))
+                plt.imsave(os.path.join(testDir if randTrial<args['valsplit'] else trainDir, str(frame).zfill(width)+'.png'), np.squeeze(newImg))
 
         clip.close()
         testFile.close()
