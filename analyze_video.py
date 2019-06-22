@@ -63,7 +63,7 @@ ap.add_argument('--crop-size', type=int, default=200,
 ap.add_argument('--width-offset', type=int, default=-50,
                 help="width offset for cropping (optional, default -50)")
 ap.add_argument('--height-offset', type=int, default=0,
-                help="height offset for croppign (optional, default 0)")
+                help="height offset for cropping (optional, default 0)")
 args = vars(ap.parse_args())
 INF = sys.maxsize
 # TODO: make this flexible for multiple sizes of sliding window
