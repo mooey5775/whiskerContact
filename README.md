@@ -3,7 +3,7 @@ Whisker Contact Detector
 
 Detects mouse whisker contacts with an obstacle for Sawtell Lab. Uses LEAP and a shallow CNN to detect time of first touch to perform reaction time analyses for mice.
 
-Currently, code remains untested. Two example models are provided.
+Two example models are provided.
 
 To generate training data, [whiskLabeler](https://github.com/mooey5775/whiskLabeler) is used.
 
@@ -25,7 +25,7 @@ Improvements
 ------------
 
  - [x] Initial release
- - [ ] Tested code
+ - [x] Tested code
  - [ ] Better handling of argument preservation across scripts
  - [ ] More flexibility in model structure
  - [ ] Training performance visualization
