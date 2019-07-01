@@ -31,3 +31,4 @@ Improvements
  - [ ] Better handling of argument preservation across scripts
  - [ ] More flexibility in model structure
  - [ ] Training performance visualization
+ - [ ] Make it not necessary to have trackedfeaturesraw and runAnalyzed
