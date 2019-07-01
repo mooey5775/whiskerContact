@@ -7,6 +7,8 @@ Two example models are provided.
 
 To generate training data, [whiskLabeler](https://github.com/mooey5775/whiskLabeler) is used.
 
+#### To get started with training your whisker net, visit the [Quick Start](https://github.com/mooey5775/whiskerContact/quick_start.md)
+
 Files
 -----
 

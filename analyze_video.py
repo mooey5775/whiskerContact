@@ -1,7 +1,6 @@
 from moviepy.editor import VideoFileClip
 import keras
 import numpy as np
-from imutils import resize
 import operator
 import keras.backend as K
 import scipy.io
